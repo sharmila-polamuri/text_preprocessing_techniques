@@ -148,6 +148,19 @@ class Preprocess:
 		Input :- string
 		Output :- string
 		"""
+		with open("short_forms.txt", 'r') as chat_txt:
+			chat_words = chat_txt.readlines()
+
+		chat_words_map_dict = {}
+		chat_words_list = []
+		for line in chat_words:
+			if line != "":
+				cw = line.split("=")[0]
+				cw_expanded = line.split("=")[1]
+				chat_words_list.append(cw)
+				chat_words_map_dict[cw] = cw_expanded
+		chat_words_list = set(chat_words_list)
+
 		new_text = []
 		for w in text.split():
 			if w.upper() in chat_words_list:
@@ -158,7 +171,8 @@ class Preprocess:
 
 	def expand_contractions(self, contraction):
 		# take maching contraction in the text
-		match = contraction.group(0)
+		# expanded_text = contractions_pattern.sub(expand_contractions, contraction)
+		match = contraction_mapping.group(0)
 		# first char from matching contrcation (D for Doesn't)
 		first_char = match[0]
 		if contraction_mapping.get(match):
@@ -312,6 +326,9 @@ class Preprocess:
 		Output :- list of frequent words
 		"""
 		# tokenization
+		# print("$$$$$$$$$$$$$$$$$$")
+		# print(type(text))
+		text = ' '.join(text)
 		tokens = word_tokenize(text)
 		for word in tokens:
 			counter[word]= +1
@@ -329,7 +346,7 @@ class Preprocess:
 		Input :- String
 		Output :- String 
 		"""
-		FrequentWords = freq_words(text)
+		FrequentWords = self.freq_words(text)
 
 		for index in range(len(text)):
 			tokens = word_tokenize(text[index])
@@ -348,6 +365,7 @@ class Preprocess:
 		Output :- list of rare words
 		"""
 		# tokenization
+		text = ' '.join(text)
 		tokens = word_tokenize(text)
 		for word in tokens:
 			counter[word]= +1
@@ -368,7 +386,7 @@ class Preprocess:
 		Output :- String 
 		"""
 
-		RareWords = rare_words(text)
+		RareWords = self.rare_words(text)
 		for index in range(len(text)):
 			tokens = word_tokenize(text[index])
 			without_rw = []
@@ -376,7 +394,7 @@ class Preprocess:
 				if word not in RareWords:
 					without_rw.append(word)
 
-			without_rw = ' '.join(without_fw)
+			without_rw = ' '.join(without_rw)
 			text[index] = without_rw
 
 		return text
@@ -495,6 +513,13 @@ class Preprocess:
 			if method == 'rfw' or method == 'rrw':
 				data = techniques_dict[method](data)
 				bar_1.next()
+			elif method == 'ec':
+				for index in range(len(data)):
+					sent = data[index]
+					# data[index] = techniques_dict[method](sent)
+					data[index] = contractions_pattern.sub(techniques_dict[method], sent)
+					data[index] = re.sub("'", "", data[index])
+					bar_1.next()
 			else:
 				for index in range(len(data)):
 					sent = data[index]
