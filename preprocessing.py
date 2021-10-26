@@ -7,14 +7,14 @@ from nltk import word_tokenize
 import unidecode
 from nltk.stem import PorterStemmer 
 from nltk.stem import WordNetLemmatizer
-from emoticons_list import EMOTICONS 
-from emoticons_list import EMO_UNICODE
+from .emoticons_list import EMOTICONS 
+from .emoticons_list import EMO_UNICODE
 from string import punctuation
 from nltk.corpus import stopwords
 import spacy
 import gensim
 from collections import Counter
-from contraction import CONTRACTION_MAP
+from .contraction import CONTRACTION_MAP
 from progress.bar import Bar
 
 
